@@ -1,10 +1,10 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String, Date, DateTime
+from sqlalchemy import Column, Integer, String, Date, DateTime, Float
 from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
-from sqlalchemy import ForeignKey, alembic
+from sqlalchemy import ForeignKey
 
-engine = create_engine("sqlite3:///runcoach.db", echo=True)
+engine = create_engine("sqlite:///runcoach.db", echo=True)
 session = scoped_session(sessionmaker(bind=engine, autocommit=False, autoflush=False))
 
 Base = declarative_base()
@@ -16,7 +16,7 @@ The 3 classes below are tables in our runcoach.db
 class User(Base):
     __tablename__ = "users"
 
-    user_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=True)
     email = Column(String(64), nullable=True)
     password = Column(String(64), nullable=True)
@@ -29,19 +29,20 @@ class Assignment(Base):
     __tablename__= "assignments"     # tables hold daily running assigments
 
     id = Column(Integer, primary_key = True)
-    date= Column(String(64), nullable = True)   # calendar date stored as string
+    date= Column(Date, nullable = True)   # calendar date stored as string
     workout_id = Column(Integer, ForeignKey('workouts.id'), nullable=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     total_miles_assigned = Column(Float(1))
     total_time_assigned = Column(DateTime)
     
 
-class Workout(Base):             #u.data = "rating" ??
+class Workout(Base):             
     __tablename__ = "workouts"
 
     id = Column(Integer, primary_key=True)
     workout_type = Column(Integer, nullable=True)
     pace = Column(String(16), nullable=True)
-    workout_time = Column(Time, nullable=True)
+    workout_time = Column(Integer, nullable=True) #store number of seconds
 ### End class declarations
 
 
